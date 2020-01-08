@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use app\common\controller\Backend;
 use app\common\service\Helper;
+use app\common\service\Upload;
 use fast\Random;
 use think\addons\Service;
 use think\Cache;
@@ -113,7 +114,7 @@ class Ajax extends Backend
         $uploadDir = substr($savekey, 0, strripos($savekey, '/') + 1);
         $fileName = substr($savekey, strripos($savekey, '/') + 1);
         if(isset($upload['qiniu'])){
-          $result =  Helper::uploadQiniu($fileInfo['tmp_name'],$fileName);
+          $result =  Upload::uploadQiniu($fileInfo['tmp_name'],$fileName);
             if ($result['status']) {
                 $params = array(
                     'admin_id' => (int)$this->auth->id,

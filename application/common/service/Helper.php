@@ -2,17 +2,8 @@
 
 
 namespace app\common\service;
-if(is_file('../vendor/qiniu/php-sdk/autoload.php')){
-    require '../vendor/qiniu/php-sdk/autoload.php';
-}
-if(is_file('./vendor/qiniu/php-sdk/autoload.php')){
-    require './vendor/qiniu/php-sdk/autoload.php';
-}
-//vendor('Qiniu.autoload');
+
 use app\common\model\UserWithdraw;
-use Qiniu\Auth as Qiniu;
-use Qiniu\Storage\BucketManager;
-use Qiniu\Storage\UploadManager;
 use app\common\model\Config;
 use app\common\model\Examination;
 use app\common\model\ExaminationPaper;
@@ -398,33 +389,6 @@ class Helper
             $valid = UserRecharge::whereIn('user_id',$totalRecommendUsers)->field('count(id),user_id')->group('user_id')->count();
         }
         return compact('total','valid');
-    }
-
-    public static function uploadQiniu($file, $fileName)
-    {
-        $upload = \think\Config::get('upload')['qiniu'];
-        $result = [
-            'status' => true,
-            'msg' => 'ok',
-            'url' => '',
-        ];
-        try {
-            $qiniu = new Qiniu($upload['access_key'], $upload['secret_Key']);
-            $bucket = $qiniu->uploadToken($upload['bucket']);
-            $uploadMgr = new UploadManager();
-            list($ret, $err) = $uploadMgr->putFile($bucket, $fileName, $file);
-            if ($err != null) {
-                echo $err;
-                $result['status'] = false;
-                $result['msg'] = $err;
-            } else {
-                $result['url'] = 'http://q3oja40bh.bkt.clouddn.com/' . ($ret['key'] ?? '');
-            }
-        } catch (\Exception $e) {
-            $result['status'] = false;
-            $result['msg'] = $e->getTraceAsString();
-        }
-        return $result;
     }
 
     /**
